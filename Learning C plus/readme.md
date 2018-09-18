@@ -1,2 +1,25 @@
-  # C++学习之路
-  > 借鉴 [C++教程 by 菜鸟教程](http://www.runoob.com/cplusplus/cpp-tutorial.html)
+# C++学习之路
+
+> 借鉴 [C++教程 by 菜鸟教程](http://www.runoob.com/cplusplus/cpp-tutorial.html)
+>
+> 由于我们在本科阶段已经学习了C语言的基础知识，同时我也翻阅了该教程第一部分的内容，确实没有难于理解的地方，因此我直接进入第二部分关于面向对象的学习。
+
+## C++面向对象（OOP）
+
+### C++ 类定义
+
+类是 C++ 的核心特性，通常被称为用户定义的类型。 但是结构体同样是用户自定义的数据类型，那么他们的[区别](https://blog.csdn.net/fu_zk/article/details/13022921)是什么？好吧，感觉区别不大，但是至少博主还对面向对象的特点进行了总结。
+
+类定义是以关键字 **class** 开头，后跟类的名称。类的主体是包含在一对花括号中。类定义后必须跟着一个分号或一个声明列表。
+
+```c++
+class Box
+{
+   public:
+      double length;   // 盒子的长度
+      double breadth;  // 盒子的宽度
+      double height;   // 盒子的高度
+};
+```
+
+关键字 **public** 确定了类成员的访问属性。在类对象作用域内，公共成员在类的外部是可访问的。
