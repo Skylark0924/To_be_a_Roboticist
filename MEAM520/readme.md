@@ -1,1 +1,1 @@
-# Lesson MEAM 520 by UPenn
+# Course MEAM 520 by UPenn
