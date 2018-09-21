@@ -823,7 +823,477 @@ class Rectangle: public Shape
 ```
 
 #### 访问控制和继承
+派生类可以访问基类中所有的非私有成员。因此基类成员如果不想被派生类的成员函数访问，则应在基类中声明为 private。
 
+| 访问     | public | protected | private |
+| -------- | ------ | --------- | ------- |
+| 同一个类 | yes    | yes       | yes     |
+| 派生类   | yes    | yes       | no      |
+| 外部的类 | yes    | no        | no      |
+
+这在上面已经学过了，但注意派生类并没有继承：
+
+- 基类的构造函数、析构函数和拷贝构造函数。
+- 基类的重载运算符。
+- 基类的友元函数。
+
+#### 继承类型
+
+基类可以被继承为 **public、protected** 或 **private** 几种类型，但几乎不使用 **protected** 或 **private** 继承，通常使用 **public** 继承。继承规则上面也已经学过了。
+
+#### 多继承
+
+多继承即一个子类可以有多个父类，它继承了多个父类的特性，语法如下：
+
+```c++
+class <派生类名>:<继承方式1><基类名1>,<继承方式2><基类名2>,…
+{
+<派生类类体>
+};
+```
+
+```c++
+...
+// 基类 Shape
+class Shape 
+{
+   public:
+      void setWidth(int w)
+      {
+         width = w;
+      }
+      void setHeight(int h)
+      {
+         height = h;
+      }
+   protected:
+      int width;
+      int height;
+};
+ 
+// 基类 PaintCost
+class PaintCost 
+{
+   public:
+      int getCost(int area)
+      {
+         return area * 70;
+      }
+};
+ 
+// 派生类
+class Rectangle: public Shape, public PaintCost
+{
+   public:
+      int getArea()
+      { 
+         return (width * height); 
+      }
+};
+...
+```
+
+------
+
+### C++ 重载运算符和重载函数
+
+C++ 允许在同一作用域中的某个**函数**和**运算符**指定多个定义，分别称为**函数重载**和**运算符重载**。重载声明是指一个与之前已经在该作用域内声明过的函数或方法具有相同名称的声明，但是它们的参数列表和定义（实现）不相同。当您调用一个**重载函数**或**重载运算符**时，编译器通过把您所使用的参数类型与定义中的参数类型进行比较，决定选用最合适的定义。选择最合适的重载函数或重载运算符的过程，称为**重载决策**。(有一种计算机自动联系上下文理解的意思)
+
+#### C++ 中的函数重载
+
+在同一个作用域内，可以声明几个功能类似的同名函数，但是这些同名函数的形式参数（指参数的个数、类型或者顺序）必须不同。您不能仅通过返回类型的不同来重载函数。
+
+```c++
+...
+class printData
+{
+   public:
+      void print(int i) {
+        cout << "整数为: " << i << endl;
+      }
+ 
+      void print(double  f) {
+        cout << "浮点数为: " << f << endl;
+      }
+ 
+      void print(char c[]) {
+        cout << "字符串为: " << c << endl;
+      }
+};
+...
+```
+
+上述成员函数的重载会在调用的时候，根据（）中的数值类型来判断选择其中的一个。
+
+#### C++ 中的运算符重载
+
+重载的运算符是带有特殊名称的函数，函数名是由关键字 operator 和其后要重载的运算符符号构成的。与其他函数一样，重载运算符有一个返回类型和一个参数列表。
+
+```c++
+Box operator+(const Box&); //加法运算符的重载
+```
+
+**对象作为参数进行传递，对象的属性使用 this运算符进行访问**
+
+```c++
+#include <iostream>
+using namespace std;
+ 
+class Box
+{
+   public:
+ 
+      double getVolume(void)
+      {
+         return length * breadth * height;
+      }
+      void setLength( double len )
+      {
+          length = len;
+      }
+ 
+      void setBreadth( double bre )
+      {
+          breadth = bre;
+      }
+ 
+      void setHeight( double hei )
+      {
+          height = hei;
+      }
+      // 重载 + 运算符，用于把两个 Box 对象相加
+      Box operator+(const Box& b)
+      {
+         Box box;
+         box.length = this->length + b.length;
+         box.breadth = this->breadth + b.breadth;
+         box.height = this->height + b.height;
+         return box;
+      }
+   private:
+      double length;      // 长度
+      double breadth;     // 宽度
+      double height;      // 高度
+};
+// 程序的主函数
+int main( )
+{
+   Box Box1;                // 声明 Box1，类型为 Box
+   Box Box2;                // 声明 Box2，类型为 Box
+   Box Box3;                // 声明 Box3，类型为 Box
+   double volume = 0.0;     // 把体积存储在该变量中
+ 
+   // Box1 详述
+   Box1.setLength(6.0); 
+   Box1.setBreadth(7.0); 
+   Box1.setHeight(5.0);
+ 
+   // Box2 详述
+   Box2.setLength(12.0); 
+   Box2.setBreadth(13.0); 
+   Box2.setHeight(10.0);
+ 
+   // Box1 的体积
+   volume = Box1.getVolume();
+   cout << "Volume of Box1 : " << volume <<endl;
+ 
+   // Box2 的体积
+   volume = Box2.getVolume();
+   cout << "Volume of Box2 : " << volume <<endl;
+ 
+   // 把两个对象相加，得到 Box3
+   Box3 = Box1 + Box2;
+ 
+   // Box3 的体积
+   volume = Box3.getVolume();
+   cout << "Volume of Box3 : " << volume <<endl;
+ 
+   return 0;
+}
+```
+
+#### 可重载运算符/不可重载运算符
+
+**可重载**
+
+| 双目算术运算符 | + (加)，-(减)，*(乘)，/(除)，% (取模)                        |
+| -------------- | ------------------------------------------------------------ |
+| 关系运算符     | ==(等于)，!= (不等于)，< (小于)，> (大于>，<=(小于等于)，>=(大于等于) |
+| 逻辑运算符     | \|\|(逻辑或)，&&(逻辑与)，!(逻辑非)                          |
+| 单目运算符     | + (正)，-(负)，*(指针)，&(取地址)                            |
+| 自增自减运算符 | ++(自增)，--(自减)                                           |
+| 位运算符       | \| (按位或)，& (按位与)，~(按位取反)，^(按位异或),，<< (左移)，>>(右移) |
+| 赋值运算符     | =, +=, -=, *=, /= , % = , &=, \|=, ^=, <<=, >>=              |
+| 空间申请与释放 | new, delete, new[ ] , delete[]                               |
+| 其他运算符     | ()(函数调用)，->(成员访问)，,(逗号)，[](下标)                |
+
+**不可重载**
+
+- `.`：成员访问运算符
+- `.*`,` ->*`：成员指针访问运算符
+- `::`：域运算符
+- `sizeof`：长度运算符
+- `?:`：条件运算符
+- `#`： 预处理符号
+
+**注意：**
+
+- 1、运算重载符不可以改变语法结构。
+- 2、运算重载符不可以改变操作数的个数。
+- 3、运算重载符不可以改变优先级。
+- 4、运算重载符不可以改变结合性。
+
+其他关于重载的知识，见[此链接](http://www.runoob.com/cplusplus/cpp-overloading.html)
+
+------
+
+### C++ 多态
+
+多态按字面的意思就是多种形态。当类之间存在层次结构，并且类之间是通过继承关联时，就会用到多态。C++ 多态意味着调用成员函数时，会根据调用函数的对象的类型来执行不同的函数。
+
+```c++
+#include <iostream> 
+using namespace std;
+ 
+class Shape {
+   protected:
+      int width, height;
+   public:
+      Shape( int a=0, int b=0)
+      {
+         width = a;
+         height = b;
+      }
+      int area()
+      {
+         cout << "Parent class area :" <<endl;
+         return 0;
+      }
+};
+class Rectangle: public Shape{
+   public:
+      Rectangle( int a=0, int b=0):Shape(a, b) { }
+      int area ()
+      { 
+         cout << "Rectangle class area :" <<endl;
+         return (width * height); 
+      }
+};
+class Triangle: public Shape{
+   public:
+      Triangle( int a=0, int b=0):Shape(a, b) { }
+      int area ()
+      { 
+         cout << "Triangle class area :" <<endl;
+         return (width * height / 2); 
+      }
+};
+// 程序的主函数
+int main( )
+{
+   Shape *shape;
+   Rectangle rec(10,7);
+   Triangle  tri(10,5);
+ 
+   // 存储矩形的地址
+   shape = &rec;
+   // 调用矩形的求面积函数 area
+   shape->area();
+ 
+   // 存储三角形的地址
+   shape = &tri;
+   // 调用三角形的求面积函数 area
+   shape->area();
+   
+   return 0;
+}
+```
+
+当上面的代码被编译和执行时，它会产生下列结果：
+
+```c++
+Parent class area
+Parent class area
+```
+
+之所以出现这种状况，是因为area()在**被调用前**、**在程序编译期间**就已经准备好了，这就是所谓的**静态多态**，或**静态链接**，也被称为**早绑定**。
+
+要解决这种*先定义*，在area()声明前加上 `virtual`：
+
+```c++
+class Shape {
+   protected:
+      int width, height;
+   public:
+      Shape( int a=0, int b=0)
+      {
+         width = a;
+         height = b;
+      }
+      virtual int area()
+      {
+         cout << "Parent class area :" <<endl;
+         return 0;
+      }
+};
+```
+
+此时，编译器看的是指针的内容，而不是它的类型。因此，由于 tri 和 rec 类的对象的地址存储在 *shape 中，所以会调用各自的 area() 函数。
+
+#### 虚函数
+
+**虚函数** 是在基类中使用关键字 **virtual** 声明的函数。在派生类中重新定义基类中定义的虚函数时，会告诉编译器不要静态链接到该函数。
+
+我们想要的是在程序中任意点可以根据所调用的对象类型来选择调用的函数，这种操作被称为**动态链接**，或**后期绑定**。
+
+#### 纯虚函数
+
+您可能想要在基类中定义虚函数，以便在派生类中重新定义该函数更好地适用于对象，但是您在基类中又不能对虚函数给出有意义的实现，这个时候就会用到纯虚函数。
+
+**即基类中的函数不添加函数体，并将函数=0**
+
+```c++
+class Shape {
+   protected:
+      int width, height;
+   public:
+      Shape( int a=0, int b=0)
+      {
+         width = a;
+         height = b;
+      }
+      // pure virtual function
+      virtual int area() = 0;
+};
+```
+
+------
+
+### C++ 数据抽象
+
+数据抽象是指，只向外界提供关键信息，并隐藏其后台的实现细节，即**只表现必要的信息而不呈现细节**。（低耦合性的体现）
+
+数据抽象是一种依赖于接口和实现分离的编程（设计）技术。
+
+在 C++ 中，我们使用**类**来定义我们自己的抽象数据类型（ADT）。
+
+#### 设计策略
+
+抽象把代码分离为接口和实现。所以在设计组件时，必须保持接口独立于实现，这样，如果改变底层实现，接口也将保持不变。
+
+在这种情况下，不管任何程序使用接口，接口都不会受到影响，只需要将最新的实现重新编译即可。
+
+------
+
+### C++ 数据封装
+
+**数据封装**是一种把数据和操作数据的函数捆绑在一起的机制，**数据抽象**是一种仅向用户暴露接口而把具体的实现细节隐藏起来的机制。
+
+C++ 通过创建**类**来支持封装和数据隐藏（public、protected、private）。我们已经知道，类包含私有成员（private）、保护成员（protected）和公有成员（public）成员。默认情况下，在类中定义的所有项目都是私有的。private权限就是实现封装的一种方式。
+
+#### 设计策略
+
+通常情况下，我们都会设置类成员状态为私有（private），除非我们真的需要将其暴露，这样才能保证良好的**封装性**。
+
+这通常应用于数据成员，但它同样适用于所有成员，包括虚函数。
+
+------
+
+### C++ 接口（抽象类）
+
+接口描述了类的行为和功能，而不需要完成类的特定实现。
+
+C++ 接口是使用**抽象类**（通常称为 ABC）来实现的，**如果类中至少有一个函数被声明为纯虚函数**，则这个类就是抽象类。
+
+```c++
+class Box
+{
+   public:
+      // 纯虚函数
+      virtual double getVolume() = 0;
+   private:
+      double length;      // 长度
+      double breadth;     // 宽度
+      double height;      // 高度
+};
+```
+
+**目的：**为了给其他类提供一个可以继承的适当的基类。抽象类不能被用于实例化对象，它只能作为**接口**使用。
+
+因此，如果一个 ABC 的子类需要被实例化，则必须实现每个虚函数，这也意味着 C++ 支持使用 ABC 声明接口。如果没有在派生类中重载纯虚函数，就尝试实例化该类的对象，会导致编译错误。
+
+```c++
+#include <iostream>
+ 
+using namespace std;
+ 
+// 基类
+class Shape 
+{
+public:
+   // 提供接口框架的纯虚函数
+   virtual int getArea() = 0;
+   void setWidth(int w)
+   {
+      width = w;
+   }
+   void setHeight(int h)
+   {
+      height = h;
+   }
+protected:
+   int width;
+   int height;
+};
+ 
+// 派生类
+class Rectangle: public Shape
+{
+public:
+   int getArea()
+   { 
+      return (width * height); 
+   }
+};
+class Triangle: public Shape
+{
+public:
+   int getArea()
+   { 
+      return (width * height)/2; 
+   }
+};
+ 
+int main(void)
+{
+   Rectangle Rect;
+   Triangle  Tri;
+ 
+   Rect.setWidth(5);
+   Rect.setHeight(7);
+   // 输出对象的面积
+   cout << "Total Rectangle area: " << Rect.getArea() << endl;
+ 
+   Tri.setWidth(5);
+   Tri.setHeight(7);
+   // 输出对象的面积
+   cout << "Total Triangle area: " << Tri.getArea() << endl; 
+ 
+   return 0;
+}
+```
+
+一看代码就清晰明了了
+
+#### 设计策略
+
+面向对象的系统可能会**使用一个抽象基类**为所有的外部应用程序提供一个适当的、通用的、标准化的**接口**。
+
+然后，派生类通过继承抽象基类，就把所有类似的操作都继承下来，并将抽象基类中的纯虚函数在相应的派生类中实现。
+
+------
+
+## C++高级教程
 
 
 待续。。。
