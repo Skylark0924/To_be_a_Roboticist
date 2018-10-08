@@ -1294,6 +1294,66 @@ int main(void)
 ------
 
 ## C++高级教程
+### 动态链接库（DLL）
 
+动态链接库（也称为DLL，即为“Dynamic Link Library”的缩写）是Microsoft Windows最重要的组成要素之一，打开Windows系统文件夹，你会发现文件夹中有很多DLL文件，Windows就是将一些主要的系统功能以DLL模块的形式实现。
+
+动态链接库是不能直接执行的，也不能接收消息，它只是一个独立的文件，其中包含能被程序或其它DLL调用来完成一定操作的函数(方法。注：C#中一般称为“方法”)，但这些函数不是执行程序本身的一部分，而是根据进程的需要按需载入，此时才能发挥作用。
+
+DLL只有在应用程序需要时才被系统加载到进程的虚拟空间中，成为调用进程的一部分，此时该DLL也只能被该进程的线程访问，它的[句柄](https://zh.wikipedia.org/wiki/%E5%8F%A5%E6%9F%84)可以被调用进程所使用，而调用进程的句柄也可以被该DLL所使用。在内存中，一个DLL只有一个实例，且它的编制与具体的编程语言和编译器都没有关系，所以可以通过DLL来实现混合语言编程。DLL函数中的代码所创建的任何对象（包括变量）都归调用它的线程或进程所有。
+
+#### DLL的调用
+
+> 在此只对用C#调用DLL的方法进行介绍，用于C#、C++混合编程
+
+首先,您需要了解什么是**托管**,什么是**非托管**。一般可以认为：非托管代码主要是基于win 32平台开发的DLL，activeX的组件，托管代码是基于.net平台开发的。如果您想深入了解托管与非托管的关系与区别，及它们的运行机制，请您自行查找资料，本文件在此不作讨论。
+
+ **调用DLL中的非托管函数一般方法**
+
+**首先**，应该在C#语言源程序中声明外部方法，其基本形式是：
+
+```c#
+[DLLImport(“DLL文件”)]
+修饰符 extern 返回变量类型 方法名称 （参数列表）
+```
+
+**其中**：
+
+DLL文件：包含定义外部方法的库文件。
+
+修饰符： 访问修饰符，除了abstract以外在声明方法时可以使用的修饰符。
+
+返回变量类型：在DLL文件中你需调用方法的返回变量类型。
+
+方法名称：在DLL文件中你需调用方法的名称。
+
+参数列表：在DLL文件中你需调用方法的列表。
+
+**注意**：需要在程序声明中使用`System.Runtime.InteropServices`命名空间。
+
+​      DllImport只能放置在方法声明上。
+
+DLL文件必须位于程序当前目录或系统定义的查询路径中（即：系统环境变量中Path所设置的路径）。
+
+返回变量类型、方法名称、参数列表一定要与DLL文件中的定义相一致。
+
+ 若要使用其它函数名，可以使用EntryPoint属性设置，如：
+
+```c#
+[DllImport("user32.dll", EntryPoint="MessageBoxA")]
+static extern int MsgBox(int hWnd, string msg, string caption, int type);
+```
+
+其它可选的 DllImportAttribute 属性：
+
+CharSet 指示用在入口点中的字符集，如：`CharSet=CharSet.Ansi`；
+
+SetLastError 指示方法是否保留 Win32"上一错误"，如：`SetLastError=true`；
+
+ExactSpelling 指示 EntryPoint 是否必须与指示的入口点的拼写完全匹配，如：`ExactSpelling=false`；
+
+PreserveSig指示方法的签名应当被保留还是被转换， 如：`PreserveSig=true`；
+
+CallingConvention指示入口点的调用约定， 如：`CallingConvention=CallingConvention.Winapi`；
 
 待续。。。
