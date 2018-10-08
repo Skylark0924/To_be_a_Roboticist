@@ -1305,12 +1305,53 @@ DLL只有在应用程序需要时才被系统加载到进程的虚拟空间中�
 #### DLL的调用
 
 > 在此只对用C#调用DLL的方法进行介绍，用于C#、C++混合编程
+>
+> 借鉴[用C++创建DLL并用C#调用且同时实现对DLL的调试](https://blog.csdn.net/songyi160/article/details/51075023)
 
 首先,您需要了解什么是**托管**,什么是**非托管**。一般可以认为：非托管代码主要是基于win 32平台开发的DLL，activeX的组件，托管代码是基于.net平台开发的。如果您想深入了解托管与非托管的关系与区别，及它们的运行机制，请您自行查找资料，本文件在此不作讨论。
 
  **调用DLL中的非托管函数一般方法**
 
-**首先**，应该在C#语言源程序中声明外部方法，其基本形式是：
+**一**，**创建C#控制台应用程序：用于调用C++编写的DLL**
+
+**二：用C++创建DLL**
+
+添加头文件
+
+.cpp引用.h
+
+写头文件：
+
+```c++
+extern "C" _declspec(dllexport) int __stdcall test01(int a, int b);
+```
+
+写源文件：
+
+```c++
+int __stdcall test01(int a, int b)
+{
+    return a+b;
+}
+```
+
+创建def模块，写入：
+
+```c++
+EXPORTS
+
+test01 @ 1
+```
+
+先将解决方案切换到Release模式，再在CreateDLL项目名称上右击选择【生成】或【重新生成】
+
+ 在解决方案所在的目录中打开Release文件夹即可看到生成的DLL
+
+**三：用C#项目调用C++创建DLL**
+
+将C#项目设置为启动项目，并且将解决方案设置为Debug模式
+
+应该在C#语言源程序中声明外部方法，其基本形式是：
 
 ```c#
 [DLLImport(“DLL文件”)]
@@ -1355,5 +1396,7 @@ ExactSpelling 指示 EntryPoint 是否必须与指示的入口点的拼写完全
 PreserveSig指示方法的签名应当被保留还是被转换， 如：`PreserveSig=true`；
 
 CallingConvention指示入口点的调用约定， 如：`CallingConvention=CallingConvention.Winapi`；
+
+
 
 待续。。。
