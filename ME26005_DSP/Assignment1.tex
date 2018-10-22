@@ -1,0 +1,94 @@
+\documentclass[12pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{physics}
+\usepackage{subfigure}
+\usepackage[noblocks]{authblk}
+\usepackage{indentfirst}
+\setlength{\parindent}{2em}
+\usepackage[colorlinks,
+            linkcolor=blue,
+            anchorcolor=blue,
+            citecolor=green
+            ]{hyperref}
+
+\author{Junjia Liu}
+\affil{School of Mechanical Engineering, Shanghai Jiaotong University, junjialiu@sjtu.edu.cn}
+\title{\textbf{Assignment 1: Fast Fourier Transform}}
+
+\begin{document}
+\maketitle
+
+\tableofcontents
+\newpage
+
+\section{Fourier Transform}
+\subsection{History of Fourier Transform}
+First of all, Fast Fourier Transform (FFT) is a fast algorithm of Discrete Fourier Transform (DFT). When it comes to FFT, we naturally have to explain the Fourier Transform first. Let's first take a look at where the Fourier transform came from? Fourier is the name of a French mathematician and physicist. He is very interested in heat transfer. In 1807, he published a paper in the French Academy of Sciences which use a sinusoidal curve to describe the temperature distribution. The paper has a controversial proposition at the time: \textbf{Any continuous cycle signals can be composed of a set of appropriate sinusoidal signals}. Two of the people who reviewed the paper at the time were famous mathematicians such as Lagrange (1736-1813) and Laplace (1749-1827). When Laplace and other reviewers voted to publish the paper, Lagrange resolutely opposed it. For nearly 50 years, Lagrange insisted that Fourier's method could not express an angular signal. The French Science Society succumbed to the authority of Lagrange and rejected the work of Fourier. It was not until 15 years after Lagrange’s death that the paper was published. Who is right? Lagrange is right: sinusoids cannot be combined into a signal with an angular angle. However, we can use sinusoids to represent it very approximally without energy differences. So based on this, Fourier is right.
+\subsection{The meaning of Fourier Transform}
+The reason why we use sinusoids to replace original signal rather than square waves or triangle waves is that the sine and cosine have properties that other signals do not have: sinusoidal fidelity. If the input is a sinusoidal signal, then the output is still sinusoidal, only the amplitude and phase may change, but the frequency and shape of the wave are still the same. It is a property which only the sinusoid has, that is why we don't use other waves. \\
+
+The Fourier principle shows that any continuously measured sequence or signal can be represented as an infinite superposition of sinusoidal signals of different frequencies. According to this principle, the Fourier transform algorithm  uses the original signal to calculate the frequency, amplitude and phase of different sinusoidal signals in an accumulated manner. 
+In the physical perspective, it is actually a way to help us change the mind of traditional time domain analysis to the frequency domain. The following 3D graphics can help us have a better understanding:
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[scale=0.7]{3dforiertransform.png} 
+\end{center}
+\end{figure}
+
+\subsection{Defination}
+Suppose $x(t)$ is a continuous time signal (the signal must be not a periodic signal) and satisfies
+$$ \int_{-\infty}^{\infty} \abs{x(t)}dt < \infty $$
+
+Then, FT of this signal exists,defined as
+$$X(j\Omega)=\int_{-\infty}^{\infty} x(t)e^{-j\Omega t} dt$$
+
+Its inverse transform is defined as
+$$x(t)=\dfrac{1}{2 \pi} \int_{-\infty}^{\infty} X(j\Omega) e^{j\Omega t} d\Omega$$
+
+However, if a CT periodic signal $x(t)=x(t+nT)$ satisfies \textit{Dirichlet conditions}, it can also be rewritten into a Fourier series. 
+\begin{itemize}
+\item $x(t)$ must have a finite number of extrema in any given interval.
+\item $x(t)$ must have a finite number of discontinuities in any given interval.
+\item $x(t)$ must be absolutely integrable over a period.
+\item $x(t)$ must be bounded.
+\end{itemize}
+
+\section{Fast Fourier Transform}
+"The FFT is one of the truly great computational
+developments of this [20 th ] century. It has changed
+the face of science and engineering so much that it
+is not an exaggeration to say that life as we know it
+would be very different without the FFT." (Charles van Loan)
+\subsection{1}
+According to the type of input signal being transformed, the Fourier transform can be divided into four types:
+\begin{enumerate}
+\item Fourier Transform
+\item Fourier Series
+\item Discrete Time Fourier Transform
+\item Discrete Fourier Transform
+\end{enumerate}
+Here are four legends of the  original signal :
+\newpage
+\begin{figure}[h]
+\begin{center}
+\includegraphics[scale=0.8]{1.png} 
+\end{center}
+\end{figure}
+
+
+
+
+
+
+
+
+
+\end{document}
