@@ -67,7 +67,7 @@ developments of this [20 th ] century. It has changed
 the face of science and engineering so much that it
 is not an exaggeration to say that life as we know it
 would be very different without the FFT." (Charles van Loan)
-\subsection{1}
+\subsection{Introduction}
 According to the type of input signal being transformed, the Fourier transform can be divided into four types:
 \begin{enumerate}
 \item Fourier Transform
@@ -82,6 +82,67 @@ Here are four legends of the  original signal :
 \includegraphics[scale=0.8]{1.png} 
 \end{center}
 \end{figure}
+Here we are talking about Discrete Fourier Transform. The DFT can transform the signal from the time domain to the frequency domain, and both of them are discrete. In other words, it can be obtained which sine waves a signal consists of, and the result is the amplitude and phase of these sine waves. So how can we know whether a sine wave is included or not. We can use the correlation of the signal to detect whether the signal wave contains another signal wave with a certain frequency: multiply the original signal by another wave, obtain a new signal wave, and then add all the amplitudes of each points in the new signal wave. The similarity of the two signals can be judged from the results. This is the principle of DFT, which is defined as:
+$$X(K)=\sum^{N-1}_{K=0} x(n)\cdot e^{\frac{-j2\pi nk}{N}}$$
+$$x(n)=\dfrac{1}{N} \sum^{N-1}_{K=0} X(K)\cdot e^{\frac{-j2\pi nk}{N}}$$
+
+For each value of DFT, there are $N$ complex multiplications and $N-1$ complex additions, so if we calculate by using the defination, it requires $N^2$ complex multiplications and $N(N-1)$
+complex additions. \textit{FFT} manages to reduce the complexity of computing the DFT from $O(n^{2})$, which arises if one simply applies the definition of DFT, to $O(n\log n)$, where $n$ is the data size.
+\subsection{Algorithm}
+\subsubsection{Root of unity}
+An $n$th root of unity, where $n$ is a positive integer ($i.e. n=1, 2, 3, \ldots$), is a number $\omega$ satisfying the equation $$\omega^{n}=1$$
+For example, 3th and 8th root of unity are shown:
+
+\begin{center}
+\begin{figure}[hbtp]
+\centering
+\includegraphics[scale=0.2]{4.png}
+\caption{3th root of unity}
+\end{figure}
+\end{center}
+\begin{figure}[hbtp]
+\centering
+\includegraphics[scale=0.4]{5.png}
+\caption{8th root of unity}
+\end{figure}
+Properties of $\omega_N^k$:
+\begin{enumerate}
+\item Periodic: $\omega_N^{nk}=\omega_N^{(n+N)k}$
+\item Conjugate Symmetry: $(\omega_N^{nk})^*=\omega_N^{(N-n)k}=\omega_N^{n(N-k)}$
+\item Symmetric: $\omega_N^{k+\frac{N}{2}}=-\omega_N^{nk}$
+\item $\omega_N^{\frac{N}{2}}=\omega_N^{-\frac{N}{2}}=-1$
+\item $\omega_N^{2n}=\omega_{\frac{N}{2}}^{n}$
+\end{enumerate}
+
+\subsubsection{Butterfly diagram}
+In the context of fast Fourier transform algorithms, a butterfly is a portion of the computation that combines the results of smaller discrete Fourier transforms (DFTs) into a larger DFT, or vice versa (breaking a larger DFT up into subtransforms). 
+
+
+Most commonly, the term "butterfly" appears in the context of the Cooley–Tukey FFT algorithm, which recursively breaks down a DFT of composite size n = rm into r smaller transforms of size m where r is the "radix" of the transform. These smaller DFTs are then combined via size-r butterflies, which themselves are DFTs of size r (performed m times on corresponding outputs of the sub-transforms) pre-multiplied by roots of unity (known as twiddle factors). 
+\begin{figure}[hbtp]
+\centering
+\includegraphics[scale=0.3]{9.png}
+\caption{Radix-2 butterfly diagram}
+\end{figure}
+
+In the case of the radix-2 Cooley–Tukey algorithm, the butterfly is simply a DFT of size-2 that takes two inputs (x0, x1) (corresponding outputs of the two sub-transforms) and gives two outputs (y0, y1) by the formula:
+$$y_0=x_0+x_1$$
+$$y_1=x_0-x_1$$
+
+More specifically, a radix-2 decimation-in-time FFT algorithm on n = 2 p inputs with respect to a primitive n-th root of unity $\omega _{N}^{k}=e^{-{\frac {j2\pi n
+k}{N}}}$ relies on O(nlogn) butterflies of the form:
+$$y_0=x_0+x_1 \omega _{N}^{k}$$
+$$y_1=x_0-x_1 \omega _{N}^{k}$$
+
+where k is an integer depending on the part of the transform being computed. 
+
+
+\subsubsection{Simplify of DFT}
+If we have a DFT like this:
+
+
+
+
 
 
 
