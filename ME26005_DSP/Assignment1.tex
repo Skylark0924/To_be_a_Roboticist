@@ -17,6 +17,18 @@
             anchorcolor=blue,
             citecolor=green
             ]{hyperref}
+\usepackage{listings}
+\lstset{
+    numbers=left, 
+    numberstyle= \tiny, 
+    keywordstyle= \color{ blue!70},
+    commentstyle= \color{red!50!green!50!blue!50}, 
+    frame=shadowbox, % 阴影效果
+    rulesepcolor= \color{ red!20!green!20!blue!20} ,
+    escapeinside=``, % 英文分号中可写入中文
+    xleftmargin=2em,xrightmargin=2em, aboveskip=1em,
+    framexleftmargin=2em
+} 
 
 \author{Junjia Liu}
 \affil{School of Mechanical Engineering, Shanghai Jiaotong University, junjialiu@sjtu.edu.cn}
@@ -158,8 +170,28 @@ Thus, an $N$-point transformation is divided into two $N/2$-point transformation
 \caption{Schematic diagram of FFT of 8-point transformation}
 \end{figure}
 
+\subsubsection{FFT in Matlab}
+It is easy to achieve FFT algorithm in Matlab,
+\lstset{language=Matlab}
+\begin{lstlisting}
+Y = fft(X)
+Y = fft(X,n)      
+%returns n-point DFT  
+Y = fft(X,n,dim)  
+%returns the Fourier transform along the dimension dim.
+\end{lstlisting}
 
-
+\lstset{language=Matlab}
+\begin{lstlisting}
+function [X,Y] = Real2FFT( x,y )
+% N-point FFT is used for 2 real signals both with length N
+N = length(x);
+z = x+y*i ;
+Z = fft(z);
+X = 0.5*(Z+conj(Z(1+mod(0:-1:1-N,N))));
+Y = 0.5*(Z-conj(Z(1+mod(0:-1:1-N,N))))/i;
+end       
+\end{lstlisting}
 
 
 
