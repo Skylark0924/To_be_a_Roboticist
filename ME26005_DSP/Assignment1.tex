@@ -83,8 +83,8 @@ Here are four legends of the  original signal :
 \end{center}
 \end{figure}
 Here we are talking about Discrete Fourier Transform. The DFT can transform the signal from the time domain to the frequency domain, and both of them are discrete. In other words, it can be obtained which sine waves a signal consists of, and the result is the amplitude and phase of these sine waves. So how can we know whether a sine wave is included or not. We can use the correlation of the signal to detect whether the signal wave contains another signal wave with a certain frequency: multiply the original signal by another wave, obtain a new signal wave, and then add all the amplitudes of each points in the new signal wave. The similarity of the two signals can be judged from the results. This is the principle of DFT, which is defined as:
-$$X(K)=\sum^{N-1}_{K=0} x(n)\cdot e^{\frac{-j2\pi nk}{N}}$$
-$$x(n)=\dfrac{1}{N} \sum^{N-1}_{K=0} X(K)\cdot e^{\frac{-j2\pi nk}{N}}$$
+$$X(k)=\sum^{N-1}_{k=0} x(n)\cdot e^{\frac{-j2\pi nk}{N}}$$
+$$x(n)=\dfrac{1}{N} \sum^{N-1}_{k=0} X(k)\cdot e^{\frac{-j2\pi nk}{N}}$$
 
 For each value of DFT, there are $N$ complex multiplications and $N-1$ complex additions, so if we calculate by using the defination, it requires $N^2$ complex multiplications and $N(N-1)$
 complex additions. \textit{FFT} manages to reduce the complexity of computing the DFT from $O(n^{2})$, which arises if one simply applies the definition of DFT, to $O(n\log n)$, where $n$ is the data size.
@@ -138,7 +138,27 @@ where k is an integer depending on the part of the transform being computed.
 
 
 \subsubsection{Simplify of DFT}
-If we have a DFT like this:
+Based on the properties of the root of unity, the series  $ y_{k}=\sum _{n=0}^{N-1}\omega_{N}^{kn}x_{n}$ can be divided into two parts,
+\begin{align*}
+y_{k} &=\sum_{n=2t}\omega_{N}^{kn}x_{n}+\sum_{n=2t+1}\omega_{N}^{kn}x_{n}\\
+&=\sum_{t}\omega _{\frac {N}{2}}^{kt}x_{2t}+\omega _{N}^{k}\sum _{t}\omega _{\frac {N}{2}}^{kt}x_{2t+1}\\
+&=F_{even}(k)+\omega _{N}^{k}F_{odd}(k)&(i\in \mathbb {Z} )
+\end{align*}
+
+Where $F_{even}(k)$ and $F_{odd}(k)$ is $N/2$-point transformation for the even and odd sequences of $\left\{x_n \right\}^{N-1}_0$. The equation just calculate top $N/2$ points of $y_k$, and the other points can be easily obtained by using the symmetry of root of unity, because both $F_{even}(k)$ and $F_{odd}(k)$ are functions with a period of $N/2$,
+\begin{align*}
+y_{k}&=F_{even}(k)+\omega_{N}^{k}F_{odd}(k)\\
+y_{k+{\frac {N}{2}}}&=F_{even}(k)-\omega_{N}^{k}F_{odd}(k)
+\end{align*}
+
+Thus, an $N$-point transformation is divided into two $N/2$-point transformations. Continue to decompose as such. This is the basic principle of the Cooley-Tukey Fast Fourier Transform algorithm. According to the master theorem, it is not difficult to analyze the time complexity of the algorithm which is $\mathrm {O} (n\log n)$.
+\begin{figure}[hbtp]
+\centering
+\includegraphics[scale=0.5]{10.jpeg}
+\caption{Schematic diagram of FFT of 8-point transformation}
+\end{figure}
+
+
 
 
 
