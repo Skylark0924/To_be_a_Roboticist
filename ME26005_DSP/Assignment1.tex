@@ -35,6 +35,7 @@
 \title{\textbf{Assignment 1: Fast Fourier Transform}}
 
 \begin{document}
+\bibliographystyle{unsrt}
 \maketitle
 
 \tableofcontents
@@ -74,11 +75,11 @@ However, if a CT periodic signal $x(t)=x(t+nT)$ satisfies \textit{Dirichlet cond
 \end{itemize}
 
 \section{Fast Fourier Transform}
-"The FFT is one of the truly great computational
+“The FFT is one of the truly great computational
 developments of this [20 th ] century. It has changed
 the face of science and engineering so much that it
 is not an exaggeration to say that life as we know it
-would be very different without the FFT." (Charles van Loan)
+would be very different without the FFT.” (Charles van Loan)
 \subsection{Introduction}
 According to the type of input signal being transformed, the Fourier transform can be divided into four types:
 \begin{enumerate}
@@ -102,7 +103,7 @@ For each value of DFT, there are $N$ complex multiplications and $N-1$ complex a
 complex additions. \textit{FFT} manages to reduce the complexity of computing the DFT from $O(n^{2})$, which arises if one simply applies the definition of DFT, to $O(n\log n)$, where $n$ is the data size.
 \subsection{Algorithm}
 \subsubsection{Root of unity}
-An $n$th root of unity, where $n$ is a positive integer ($i.e. n=1, 2, 3, \ldots$), is a number $\omega$ satisfying the equation $$\omega^{n}=1$$
+An $n$th root of unity, where $n$ is a positive integer ($i.e. n=1, 2, 3, \ldots$), is a number $W$ satisfying the equation $$W^{n}=1$$
 For example, 3th and 8th root of unity are shown:
 
 \begin{center}
@@ -117,13 +118,14 @@ For example, 3th and 8th root of unity are shown:
 \includegraphics[scale=0.4]{5.png}
 \caption{8th root of unity}
 \end{figure}
-Properties of $\omega_N^k$:
+\newpage
+Properties of $W_N^k$:
 \begin{enumerate}
-\item Periodic: $\omega_N^{nk}=\omega_N^{(n+N)k}$
-\item Conjugate Symmetry: $(\omega_N^{nk})^*=\omega_N^{(N-n)k}=\omega_N^{n(N-k)}$
-\item Symmetric: $\omega_N^{k+\frac{N}{2}}=-\omega_N^{nk}$
-\item $\omega_N^{\frac{N}{2}}=\omega_N^{-\frac{N}{2}}=-1$
-\item $\omega_N^{2n}=\omega_{\frac{N}{2}}^{n}$
+\item Periodic: $W_N^{nk}=W_N^{(n+N)k}$
+\item Conjugate Symmetry: $(W_N^{nk})^*=W_N^{(N-n)k}=W_N^{n(N-k)}$
+\item Symmetric: $W_N^{k+\frac{N}{2}}=-W_N^{nk}$
+\item $W_N^{\frac{N}{2}}=W_N^{-\frac{N}{2}}=-1$
+\item $W_N^{2n}=W_{\frac{N}{2}}^{n}$
 \end{enumerate}
 
 \subsubsection{Butterfly diagram}
@@ -141,37 +143,65 @@ In the case of the radix-2 Cooley–Tukey algorithm, the butterfly is simply a D
 $$y_0=x_0+x_1$$
 $$y_1=x_0-x_1$$
 
-More specifically, a radix-2 decimation-in-time FFT algorithm on n = 2 p inputs with respect to a primitive n-th root of unity $\omega _{N}^{k}=e^{-{\frac {j2\pi n
+More specifically, a radix-2 decimation-in-time FFT algorithm on n = 2 p inputs with respect to a primitive n-th root of unity $W _{N}^{k}=e^{-{\frac {j2\pi n
 k}{N}}}$ relies on O(nlogn) butterflies of the form:
-$$y_0=x_0+x_1 \omega _{N}^{k}$$
-$$y_1=x_0-x_1 \omega _{N}^{k}$$
+$$y_0=x_0+x_1 W _{N}^{k}$$
+$$y_1=x_0-x_1 W _{N}^{k}$$
 
 where k is an integer depending on the part of the transform being computed. 
 
 
 \subsubsection{Simplify of DFT}
-Based on the properties of the root of unity, the series  $ y_{k}=\sum _{n=0}^{N-1}\omega_{N}^{kn}x_{n}$ can be divided into two parts,
+Based on the properties of the root of unity, the series  $ y_{k}=\sum _{n=0}^{N-1}W_{N}^{kn}x_{n}$ can be divided into two parts,
 \begin{align*}
-y_{k} &=\sum_{n=2t}\omega_{N}^{kn}x_{n}+\sum_{n=2t+1}\omega_{N}^{kn}x_{n}\\
-&=\sum_{t}\omega _{\frac {N}{2}}^{kt}x_{2t}+\omega _{N}^{k}\sum _{t}\omega _{\frac {N}{2}}^{kt}x_{2t+1}\\
-&=F_{even}(k)+\omega _{N}^{k}F_{odd}(k)&(i\in \mathbb {Z} )
+y_{k} &=\sum_{n=2t}W_{N}^{kn}x_{n}+\sum_{n=2t+1}W_{N}^{kn}x_{n}\\
+&=\sum_{t}W _{\frac {N}{2}}^{kt}x_{2t}+W _{N}^{k}\sum _{t}W _{\frac {N}{2}}^{kt}x_{2t+1}\\
+&=F_{even}(k)+W _{N}^{k}F_{odd}(k)&(i\in \mathbb {Z} )
 \end{align*}
 
-Where $F_{even}(k)$ and $F_{odd}(k)$ is $N/2$-point transformation for the even and odd sequences of $\left\{x_n \right\}^{N-1}_0$. The equation just calculate top $N/2$ points of $y_k$, and the other points can be easily obtained by using the symmetry of root of unity, because both $F_{even}(k)$ and $F_{odd}(k)$ are functions with a period of $N/2$,
+Where $F_{even}(k)$ and $F_{odd}(k)$ is $N/2$-point transformation for the even and odd sequences of $\left\{x_n \right\}^{N-1}_0$.\cite{wiki:xxx} The equation just calculate top $N/2$ points of $y_k$, and the other points can be easily obtained by using the symmetry of root of unity, because both $F_{even}(k)$ and $F_{odd}(k)$ are functions with a period of $N/2$,
 \begin{align*}
-y_{k}&=F_{even}(k)+\omega_{N}^{k}F_{odd}(k)\\
-y_{k+{\frac {N}{2}}}&=F_{even}(k)-\omega_{N}^{k}F_{odd}(k)
+y_{k}&=F_{even}(k)+W_{N}^{k}F_{odd}(k)\\
+y_{k+{\frac {N}{2}}}&=F_{even}(k)-W_{N}^{k}F_{odd}(k)
 \end{align*}
 
-Thus, an $N$-point transformation is divided into two $N/2$-point transformations. Continue to decompose as such. This is the basic principle of the Cooley-Tukey Fast Fourier Transform algorithm. According to the master theorem, it is not difficult to analyze the time complexity of the algorithm which is $\mathrm {O} (n\log n)$.
+Thus, an $N$-point transformation is divided into two $N/2$-point transformations. Continue to decompose as such. This is the basic principle of the Cooley-Tukey Fast Fourier Transform algorithm. 
 \begin{figure}[hbtp]
 \centering
-\includegraphics[scale=0.5]{10.jpeg}
-\caption{Schematic diagram of FFT of 8-point transformation}
+\includegraphics[scale=0.5]{10.png}
+\caption{Schematic diagram of FFT with 16-point}
 \end{figure}
 
+Figure 4 shows an example of the time domain decomposition used in the
+FFT. In this example, a 16 point signal is decomposed through four separate stages. The first stage breaks the 16 point signal into two signals each
+consisting of 8 points. The second stage decomposes the data into four signals
+of 4 points. This pattern continues until there are N signals composed of a
+single point. An \textbf{interlaced decomposition} is used each time a signal is
+broken in two, that is, the signal is separated into its even and odd numbered
+samples. \cite{smith1997scientist}
+
+It can be seen that an $N$-point transformation change into single point require $Log_2 N$ stages. For each stage, there are $n$ points. It easy to find that complexity of this algorithm is $O(n\log n)$.
+
+All in all, the decomposition is just a \textbf{reordering} of samples in the signal. Figure 5 shows the achievement of decomposition which using a \textbf{bit reversal sorting} algorithm. 
+\begin{figure}[hbtp]
+\centering
+\includegraphics[scale=0.5]{14.png}
+\caption{Bit reversal sorting}
+\end{figure}
+\newpage
+
+
+According to the bit reversal sorting algorithm, FFT algorithm can be implemented by calculating from the resorted samples to original samples. The process is shown in Figure 6.
+\begin{figure}[hbtp]
+\centering
+\includegraphics[scale=1]{13.png}
+\caption{Code implementation of 16-points FFT}
+\end{figure}
+
+\newpage
+\subsection{FFT Program}
 \subsubsection{FFT in Matlab}
-It is easy to achieve FFT algorithm in Matlab,
+It is easy to achieve FFT algorithm in Matlab.
 \lstset{language=Matlab}
 \begin{lstlisting}
 Y = fft(X)
@@ -181,27 +211,168 @@ Y = fft(X,n,dim)
 %returns the Fourier transform along the dimension dim.
 \end{lstlisting}
 
+There is a example given by MathWork. Use Fourier transforms to find the frequency components of a signal buried in noise.
 \lstset{language=Matlab}
 \begin{lstlisting}
-function [X,Y] = Real2FFT( x,y )
-% N-point FFT is used for 2 real signals both with length N
-N = length(x);
-z = x+y*i ;
-Z = fft(z);
-X = 0.5*(Z+conj(Z(1+mod(0:-1:1-N,N))));
-Y = 0.5*(Z-conj(Z(1+mod(0:-1:1-N,N))))/i;
-end       
+Fs = 1000;            % Sampling frequency                    
+T = 1/Fs;             % Sampling period       
+L = 1500;             % Length of signal
+t = (0:L-1)*T;        % Time vector
+
+% Form a signal containing a 50 Hz sinusoid of amplitude 0.7 
+%      and a 120 Hz sinusoid of amplitude 1.
+S = 0.7*sin(2*pi*50*t) + sin(2*pi*120*t);
+
+%Corrupt the signal with zero-mean white noise 
+%        with a variance of 4.
+X = S + 2*randn(size(t));
+
+plot(1000*t(1:50),X(1:50))
+title('Signal Corrupted with Zero-Mean Random Noise')
+xlabel('t(milliseconds)')
+ylabel('X(t)')
 \end{lstlisting}
 
+\begin{figure}[hbtp]
+\centering
+\includegraphics[scale=0.5]{15.png}
+\end{figure}
+
+\newpage
+Compute the Fourier transform of the signal.
+\lstset{language=Matlab}
+\begin{lstlisting}
+Y = fft(X);
+P2 = abs(Y/L);
+P1 = P2(1:L/2+1);
+P1(2:end-1) = 2*P1(2:end-1);
+f = Fs*(0:(L/2))/L;
+plot(f,P1) 
+title('Single-Sided Amplitude Spectrum of X(t)')
+xlabel('f(Hz)')
+ylabel('|P1(f)|')
+\end{lstlisting}
+
+\begin{figure}[hbtp]
+\centering
+\includegraphics[scale=0.5]{16.png}
+\end{figure}
+
+Now, take the Fourier transform of the original, uncorrupted signal and retrieve the exact amplitudes, 0.7 and 1.0.
+\lstset{language=Matlab}
+\begin{lstlisting}
+Y = fft(S);
+P2 = abs(Y/L);
+P1 = P2(1:L/2+1);
+P1(2:end-1) = 2*P1(2:end-1);
+
+plot(f,P1) 
+title('Single-Sided Amplitude Spectrum of S(t)')
+xlabel('f(Hz)')
+ylabel('|P1(f)|')
+\end{lstlisting}
+
+\begin{figure}[hbtp]
+\centering
+\includegraphics[scale=0.5]{17.png}
+\end{figure}
+
+\newpage
+
+\subsubsection{FFT in C++}
+Recursive implementation:
+\lstset{language=C++}
+\begin{lstlisting}
+void fft(int n, complex<double>* buffer, int offset, int step,
+         complex<double>* epsilon) 
+{
+	if(n == 1) return;
+	int m = n >> 1;
+	fft(m, buffer, offset, step << 1, epsilon);
+	fft(m, buffer, offset + step, step << 1, epsilon);
+	for(int k = 0; k != m; ++k)
+	{
+	  int pos = 2 * step * k;
+	  temp[k] = buffer[pos + offset]+ epsilon[k * step] 
+		        * buffer[pos + offset + step];
+	  temp[k + m] = buffer[pos + offset] - epsilon[k*step] 
+	                * buffer[pos + offset + step];
+	}
+
+	for(int i = 0; i != n; ++i)
+	  buffer[i * step + offset] = temp[i];
+}
+
+void init_epsilon(int n){
+	double pi = acos(-1);
+	for(int i = 0; i != n; ++i)
+	{
+	  epsilon[i] = complex<double>(cos(2.0 * pi * i / n),
+		               sin(2.0 * pi * i / n)); 
+	  arti_epsilon[i] = conj(epsilon[i]);
+	}
+}
+\end{lstlisting} 
+
+\newpage
+Iterative implementation:
+\lstset{language=C++}
+\begin{lstlisting}
+//Bit reversal sorting
+void bit_reverse(int n, complex_t *x) {
+	for(int i = 0, j = 0; i != n; ++i)
+	{
+		if(i > j) swap(x[i], x[j]);
+		for(int l = n >> 1; (j ^= l) < l; l >>= 1);
+	}
+}
+
+//FFT
+void transform(int n, complex_t *x, complex_t *w) 
+{
+   bit_reverse(n, x);
+   for(int i = 2; i <= n; i <<= 1)
+   {
+	  int m = i >> 1;
+	  for(int j = 0; j < n; j += i)
+	  {
+		 for(int k = 0; k != m; ++k)
+		 {
+			complex_t z = x[j + m + k]*w[n/i*k];
+			x[j + m + k] = x[j + k] - z;
+			x[j + k] += z;
+		 }
+	  }
+   }
+}
+\end{lstlisting} 
+
+\subsection{Application}
+Because my major is Robotics, when talking about FFT or FT, Digital image processing or Computer Vision must be the first to be occured to me.
+\subsubsection{Two-dimensional DFT}
+As we are only concerned with digital images, we will restrict this discussion to the Discrete Fourier Transform (DFT).
+
+For a square image of size $N\times N$, the two-dimensional DFT is given by:
+$$F(k,l)=\sum_{i=0}^{N-1} \sum_{j=0}^{N-1} f(i,j) e^{-\iota 2\pi (\frac{ki}{N}+\frac{lj}{N})}$$
+
+where $f(a,b)$ is the image in the spatial domain and the exponential term is the basis function corresponding to each point $F(k,l)$ in the Fourier space. The equation can be interpreted as: the value of each point $F(k,l)$ is obtained by multiplying the spatial image with the corresponding base function and summing the result.
+
+In a similar way, the Fourier image can be re-transformed to the spatial domain. The inverse Fourier transform is given by:
+$$f(a,b)=\dfrac{1}{N^2}\sum^{N-1}_{k=0} \sum_{N-1}^{l=0} F(k,l) e^{\iota 2\pi (\frac{ka}{N}+\frac{lb}{N}))}$$
+
+To calculate these formulas, two-dimensional DFT can be separated into two one-dimensional DFT. The spatial domain image is first transformed into an intermediate image using $N$ one-dimensional Fourier Transforms. This intermediate image is then transformed into the final image, again using $N$ one-dimensional Fourier Transforms. FFT is useful to accelerate the calculation.
+
+The Fourier Transform is used to access the geometric characteristics of a spatial domain image. Because the image in the Fourier domain is decomposed into its sinusoidal components, it is easy to examine or process certain frequencies of the image, thus influencing the geometric structure in the spatial domain.
+
+In most implementations the Fourier image is shifted in such a way that the DC-value (i.e. the image mean) $F(0,0)$ is displayed in the center of the image. The further away from the center an image point is, the higher is its corresponding frequency.
+
+We start off by applying the Fourier Transform of
 
 
 
 
 
-
-
-
-
-
+\bibliographystyle{unsrt}
+\bibliography{Assignment1}
 
 \end{document}
