@@ -201,6 +201,8 @@ According to the bit reversal sorting algorithm, FFT algorithm can be implemente
 \newpage
 \subsection{FFT Program}
 \subsubsection{FFT in Matlab}
+
+
 It is easy to achieve FFT algorithm in Matlab.
 \lstset{language=Matlab}
 \begin{lstlisting}
@@ -278,6 +280,50 @@ ylabel('|P1(f)|')
 \end{figure}
 
 \newpage
+Although Matlab already have the fft function, it is neccessary to achieve fft algorithm by ourselves.
+\lstset{language=Matlab}
+\begin{lstlisting}
+function F=my_fft(x)
+sz=size(x);
+if sz(1)>1&&sz(2)>1||numel(sz)>2
+    F=-1;
+    return;
+end
+
+N=max(sz(1:2));
+if N==1
+    F=x;
+    return;
+end
+if sz(1)>1
+    F=zeros(N,1);
+end
+if sz(2)>1
+    F=zeros(1,N);
+end
+for k=1:N/2
+    [F(k),F(k+N/2)]=my_fft_ele(x,N,k);
+end
+\end{lstlisting}
+
+\newpage
+\lstset{language=Matlab}
+\begin{lstlisting}
+function [Fk,Fkn]=my_fft_ele(x,N,k) 
+    if N==1
+        Fk=x;
+        Fkn=x;
+        return;
+    else
+        x1=x(1:2:N-1);
+        x2=x(2:2:N);
+        F1=my_fft_ele(x1,N/2,k);
+        F2=my_fft_ele(x2,N/2,k);
+        Wkn=exp(-i*2*pi*(k-1)/N);
+        Fk=F1+Wkn*F2;
+        Fkn=F1-Wkn*F2;
+    end
+\end{lstlisting}
 
 \subsubsection{FFT in C++}
 Recursive implementation:
@@ -347,8 +393,11 @@ void transform(int n, complex_t *x, complex_t *w)
 }
 \end{lstlisting} 
 
+\subsubsection{Zero padding}
+There will be a problem when the number of samples is not equal to $2^p, p \in Z$(i.e. the fft program we built by ourselves in section 2.3.1). Becsuse FFT algorithm needs $2^p$ points so that it can finially separate the DFT into radix-2 Cooley-Tukey algorithm. The solution is padding zero after the incomplete sample set which is used in MATLAB fft function. Thanks to \href{http://zhanjxcom.lofter.com/post/1cbc8f0a_35fc02b}{zhanjxcom}, we can find that the position we pad zero in the sample set have an influence to the  precision of frequency domain.
+
 \subsection{Application}
-Because my major is Robotics, when talking about FFT or FT, Digital image processing or Computer Vision must be the first to be occured to me.
+Because my major is Robotics, when talking about FFT or FT, Digital Image Processing or Computer Vision must be the first to be occured to me.
 \subsubsection{Two-dimensional DFT}
 As we are only concerned with digital images, we will restrict this discussion to the Discrete Fourier Transform (DFT).
 
@@ -362,15 +411,86 @@ $$f(a,b)=\dfrac{1}{N^2}\sum^{N-1}_{k=0} \sum_{N-1}^{l=0} F(k,l) e^{\iota 2\pi (\
 
 To calculate these formulas, two-dimensional DFT can be separated into two one-dimensional DFT. The spatial domain image is first transformed into an intermediate image using $N$ one-dimensional Fourier Transforms. This intermediate image is then transformed into the final image, again using $N$ one-dimensional Fourier Transforms. FFT is useful to accelerate the calculation.
 
+\subsubsection{Application in Digital Image Processing}
 The Fourier Transform is used to access the geometric characteristics of a spatial domain image. Because the image in the Fourier domain is decomposed into its sinusoidal components, it is easy to examine or process certain frequencies of the image, thus influencing the geometric structure in the spatial domain.
 
 In most implementations the Fourier image is shifted in such a way that the DC-value (i.e. the image mean) $F(0,0)$ is displayed in the center of the image. The further away from the center an image point is, the higher is its corresponding frequency.
 
-We start off by applying the Fourier Transform of
+We start off by applying the Fourier Transform on the classical Digital Image Processing example —— Lenna.
+
+\begin{figure}[hbtp]
+\centering
+\includegraphics[scale=2]{../MATLABwork/Lenna.jpg}
+\caption{Lenna}
+\end{figure}
+
+First, change RGB image into grayscale. 
+\lstset{language=MATLAB}
+\begin{lstlisting}
+f=imread('Lenna.jpg');
+imshow(f)
+f1=rgb2gray(f);
+imshow(f1)
+\end{lstlisting} 
+\begin{figure}[hbtp]
+\centering
+\includegraphics[scale=1]{../MATLABwork/Lennagray.png}
+\caption{Lenna in grayscale}
+\end{figure}
+
+\newpage
+The magnitude calculated from the complex result is shown in
+\lstset{language=MATLAB}
+\begin{lstlisting}
+F=fft2(f1);
+S=abs(F);
+imshow(S, [])
+\end{lstlisting} 
 
 
+\begin{figure}[hbtp]
+\centering
+\includegraphics[scale=1]{../MATLABwork/1.png} 
+\end{figure}
 
+We can see that the DC-value is by far the largest component of the image. However, the dynamic range of the Fourier coefficients (i.e. the intensity values in the Fourier image) is too large to be displayed on the screen, therefore all other values appear as black. If we apply a logarithmic transformation to the image we obtain
+\lstset{language=MATLAB}
+\begin{lstlisting}
+Fc=fftshift(F);
+S2=log(1+abs(Fc));
+imshow(S2,[])
+\end{lstlisting} 
 
+\begin{figure}[hbtp]
+\centering
+\includegraphics[scale=1]{../MATLABwork/3.png} 
+\end{figure}
+
+The result shows that the image contains components of all frequencies, but that their magnitude gets smaller for higher frequencies. Hence, low frequencies contain more image information than the higher ones. The transform image also tells us that there are two dominating directions in the Fourier image, one passing vertically and one horizontally through the center. These originate from the regular patterns in the background of the original image. 
+
+Then, we try to use FFT and Gaussian Blur to process this figure.
+\lstset{language=MATLAB}
+\begin{lstlisting}
+[M,N]=size(f1);
+F=fft2(f1);
+sig=10;
+H=lpfilter('gaussian',M,N,sig);
+G=H.*F;
+g=real(ifft2(G));
+imshow(g,[])
+\end{lstlisting} 
+
+\begin{figure}[hbtp]
+\centering
+\includegraphics[scale=1]{../MATLABwork/4.png}
+\caption{Lenna after Gaussian Blur}
+\end{figure}
+
+Obviously, this is not a perfect processing method. However, it is also not our theme in this article. We have already seen the simple application of FFT in Digital Image Processing.
+
+\newpage
+\section{Conculsion}
+Fourier Transform is a method to transform a signal from time domain into frequency domain. Fast Fourier Transform is a simplify of DFT, which really accelerates the DFT and makes it easier to use. It uses the notions of Root of unit and Butterfly diagram to separate the classical DFT mission into many smaller one and use Bit reversal sorting to reorder the samples of the signal. Besides, Two-dmensional DFT is also used in Digital Image Processing and FFT is used to accelerate this process. 
 
 \bibliographystyle{unsrt}
 \bibliography{Assignment1}
