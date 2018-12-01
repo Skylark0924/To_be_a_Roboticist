@@ -19,16 +19,19 @@
             ]{hyperref}
 \usepackage{listings}
 \lstset{
-    numbers=left, 
-    numberstyle= \tiny, 
-    keywordstyle= \color{ blue!70},
-    commentstyle= \color{red!50!green!50!blue!50}, 
-    frame=shadowbox, % 阴影效果
-    rulesepcolor= \color{ red!20!green!20!blue!20} ,
-    escapeinside=``, % 英文分号中可写入中文
-    xleftmargin=2em,xrightmargin=0em, aboveskip=1em,
-    framexleftmargin=2em
-} 
+	columns=fixed,       
+	numbers=left,                                        % 在左侧显示行号
+	numberstyle=\tiny\color{gray},                       % 设定行号格式
+	frame=none,                                          % 不显示背景边框
+	backgroundcolor=\color[RGB]{245,245,244},            % 设定背景颜色
+	keywordstyle=\color[RGB]{40,40,255},                 % 设定关键字颜色
+	numberstyle=\footnotesize\color{darkgray},           
+	commentstyle=\it\color[RGB]{0,96,96},                % 设置代码注释的格式
+	stringstyle=\rmfamily\slshape\color[RGB]{128,0,0},   % 设置字符串格式
+	showstringspaces=false,                              % 不显示字符串中的空格
+	language=Matlab
+}
+
 
 \author{Junjia Liu}
 \affil{School of Mechanical Engineering, Shanghai Jiaotong University, junjialiu@sjtu.edu.cn}
@@ -602,6 +605,162 @@ subplot(3,2,6);
 imshow(g_1,[0 1]);
 xlabel('e).Result image');
 \end{lstlisting}
+
+\section{Design different IIR and FIR filters and compare filtering characteristics}
+Although I have already finished my assignment by describing filters in DIP, I still want to find out the difference between IIR filters and FIR filters.
+
+For the same technique target:
+$$0.99\leq\abs{H(e^{j\omega})}\leq 1.01 \quad  0\leq \omega\leq 0.4\pi$$
+$$\abs{H(e^{j\omega})}\leq 0.001 \quad 0.6\pi \leq \omega$$
+\subsection{IIR Filters} 
+\subsubsection{Butterworth Filter}
+\begin{lstlisting}
+	clear;
+	clc;
+	fs=2000
+	Wp=2*400/fs;
+	Ws=2*600/fs;
+	[n,Wn]=buttord(Wp,Ws,0.086,60);
+	[b,a]=butter(n,Wn);
+	figure(2);clf;
+	freqz(b,a,256,fs);
+	fvtool(b,a);
+\end{lstlisting}
+\begin{figure}[htbp]
+	\centering
+	\begin{minipage}[h]{0.48\textwidth}
+		\centering
+		\includegraphics[width=8cm]{../../MATLABwork/DSP/15}
+	\end{minipage}
+	\begin{minipage}[htbp]{0.48\textwidth}
+		\centering
+		\includegraphics[width=8cm]{../../MATLABwork/DSP/16}
+	\end{minipage}
+\end{figure}
+\subsubsection{Chebyshev Type I Filter}
+\begin{lstlisting}
+clear;
+clc;
+fs=2000
+Wp=2*400/fs;
+Ws=2*600/fs;
+[n,Wn]=cheb1ord(Wp,Ws,0.086,60);
+[b,a] = cheby1(n,0.086,Wn);
+figure(2);clf;
+freqz(b,a,256,fs); %The frequency response of the filter
+fvtool(b,a);
+\end{lstlisting}
+\begin{figure}[htbp]
+	\centering
+	\begin{minipage}[h]{0.48\textwidth}
+		\centering
+		\includegraphics[width=8cm]{../../MATLABwork/DSP/17}
+	\end{minipage}
+	\begin{minipage}[htbp]{0.48\textwidth}
+		\centering
+		\includegraphics[width=8cm]{../../MATLABwork/DSP/18}
+	\end{minipage}
+\end{figure}
+\subsubsection{Elliptic Filter}
+\begin{lstlisting}
+clear;
+clc;
+fs=2000
+Wp=2*400/fs;
+Ws=2*600/fs;
+[n,Wn]=ellipord(Wp,Ws,0.086,60);
+[b,a] = ellip(n,0.086,60,Wn);
+figure(2);clf;
+freqz(b,a,256,fs); %The frequency response of the filter
+fvtool(b,a);
+\end{lstlisting}
+\begin{figure}[htbp]
+	\centering
+	\begin{minipage}[h]{0.48\textwidth}
+		\centering
+		\includegraphics[width=8cm]{../../MATLABwork/DSP/19}
+	\end{minipage}
+	\begin{minipage}[htbp]{0.48\textwidth}
+		\centering
+		\includegraphics[width=8cm]{../../MATLABwork/DSP/20}
+	\end{minipage}
+\end{figure}
+\subsubsection{Discussion}
+From the above figures, we can find that, to meet the same technique target, Butterworth filter needs 14 orders, Chebyshev Type I filter needs 8 orders and Elliptic filters needs 6 orders. So using elliptic filters can decrease calculations. Besides, the frequency response of Chebyshev Type I and Elliptic filter oscillates in the passband. The phase of these three IIR filters are nonlinear.
+
+\subsection{FIR Filters}
+\subsubsection{Low-pass filter with 38th order Bartlett window}
+\begin{lstlisting}
+clear;
+clc;
+fs=2000
+a = 1;
+b = fir1(37,0.5,'low',bartlett(38));
+figure(1); clf;
+freqz(b,a);
+fvtool(b,a);
+\end{lstlisting}
+\begin{figure}[htbp]
+	\centering
+	\begin{minipage}[h]{0.48\textwidth}
+		\centering
+		\includegraphics[width=8cm]{../../MATLABwork/DSP/21}
+	\end{minipage}
+	\begin{minipage}[htbp]{0.48\textwidth}
+		\centering
+		\includegraphics[width=8cm]{../../MATLABwork/DSP/22}
+	\end{minipage}
+\end{figure}
+
+\subsubsection{Low-pass filter with 38th order Hamming window}
+\begin{lstlisting}
+clear;
+clc;
+fs=2000
+a = 1;
+b = fir1(37,0.5,'low',hamming(38));
+figure(1); clf;
+freqz(b,a);
+fvtool(b,a);
+\end{lstlisting}
+\begin{figure}[htbp]
+	\centering
+	\begin{minipage}[h]{0.48\textwidth}
+		\centering
+		\includegraphics[width=8cm]{../../MATLABwork/DSP/23}
+	\end{minipage}
+	\begin{minipage}[htbp]{0.48\textwidth}
+		\centering
+		\includegraphics[width=8cm]{../../MATLABwork/DSP/24}
+	\end{minipage}
+\end{figure}
+
+\subsubsection{Low-pass filter with 38th order Kaiser window}
+\begin{lstlisting}
+clear;
+clc;
+fs=2000
+a = 1;
+b = fir1(37,0.5,'low',kaiser(38,5.653));
+figure(1); clf;
+freqz(b,a);
+fvtool(b,a);
+\end{lstlisting}
+\begin{figure}[htbp]
+	\centering
+	\begin{minipage}[h]{0.48\textwidth}
+		\centering
+		\includegraphics[width=8cm]{../../MATLABwork/DSP/25}
+	\end{minipage}
+	\begin{minipage}[htbp]{0.48\textwidth}
+		\centering
+		\includegraphics[width=8cm]{../../MATLABwork/DSP/26}
+	\end{minipage}
+\end{figure}
+
+\subsubsection{Discussion}
+From the above figures, we can find that the main lobe width of three filters are the same, but the side lobe of the FIR filter with Kaiser window is lower than Bartlett’s and Hamming’s. 
+Compared to IIR filter, the phase of FIR filter is linear. It stops phase distortion to occur. However, we can also find that the order of FIR filter is higher than IIR filter, when they meet the same technique target. 
 
 
 \bibliographystyle{unsrt}
